@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'portfolio/create'
+
+  get 'portfolio/get'
+
   resources :users
   post 'asset/add'
 
