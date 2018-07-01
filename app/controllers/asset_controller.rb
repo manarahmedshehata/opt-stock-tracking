@@ -1,4 +1,5 @@
 class AssetController < ApplicationController
+  #POST /asset/add
   def add
   	@asset = Asset.new(asset_params)
     # check if asset saving is done or not
@@ -8,7 +9,7 @@ class AssetController < ApplicationController
       render json: {status: "error", msg: "Can't save this asset"}
     end
   end
-
+   # PUT /asset/update_price
   def update_price
     @asset=Asset.find_by_name(asset_params[:name])
     #Check if price is sent in request body or not
@@ -23,9 +24,10 @@ class AssetController < ApplicationController
       render json: {status: "error",msg: "there is no price sent to update "}
     end
   end
-
+  #GET /asset/list
   def list
-
+    @assets=Asset.all
+    render json: @assets
   end
 
   def get
