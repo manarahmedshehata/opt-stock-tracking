@@ -4,7 +4,6 @@ class CreatePortofliosAssets < ActiveRecord::Migration[5.0]
       t.references :portfolio, foreign_key: true
       t.references :asset, foreign_key: true
       t.integer :amount
-  	end
     end
   end
 end
