@@ -1,4 +1,5 @@
 class Portfolio < ApplicationRecord
   belongs_to :user
-  has_and_belongs_to_many :assets
+  has_many :portfolio_assets
+  has_many :assets, through: :portfolio_assets
 end
