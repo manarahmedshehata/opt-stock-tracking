@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get 'portfolio/create'
+  post 'portfolio/create'
 
   get 'portfolio/get'
 
