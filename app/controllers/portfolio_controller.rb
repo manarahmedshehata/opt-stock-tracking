@@ -13,10 +13,12 @@ class PortfolioController < ApplicationController
   param :name, String, "asset name"
   param :price, Integer
   end
+  def_param_group :user do
+  param :name, String, "user name"
+  end
   api :POST, 'potfolio/create' , "Create the portfolio"
-  #param_group :asset
-   param :asset, Array[:asset],:desc => "array of submitted assets with asset Name and invested amount in this asset"
-   param :user, Integer,:desc => "creator id" 
+   param :asset, Array[:asset],:desc => "array of submitted assets with asset Name and invested amount in this asset", :required => true
+   param :user, Integer,:desc => "creator refrence to user", :required => true
   def create
   	@portfolio_creator=User.find(portfolio_creator[:user])
   	@portfolio = Portfolio.create(user:@portfolio_creator)
@@ -69,8 +71,11 @@ class PortfolioController < ApplicationController
  
 #GET List user portfolios
 #GET /portfolio/get?user=<User_id>
- api :GET, 'potfolio/get'
-  param :user, Integer,:desc => "creator id" 
+  api :GET, 'potfolio/get', "get user portfolios request is 'potfolio/get?user=<User_id>'"
+  param :user, Integer,:desc => "creator id" , :required => true
+  returns :code => 200, :desc => "Detailed info about all the portifolios related to this user" do
+	  param :portfolios,Array[:portfolio], :desc => "Detailed info about all the portifolios related to this user"
+  end
   def get
   	@portfoliosdata=[]
   	#get all related portfolios

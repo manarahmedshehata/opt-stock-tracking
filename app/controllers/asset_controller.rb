@@ -1,5 +1,11 @@
 class AssetController < ApplicationController
+  def_param_group :asset do
+  param :name, String, "asset name", :required => true
+  param :price, Integer
+  end
   #POST /asset/add
+  api :POST, "asset/add", "Create a asset"
+  param_group :asset
   def add
   	@asset = Asset.new(asset_params)
     # check if asset saving is done or not
@@ -10,6 +16,9 @@ class AssetController < ApplicationController
     end
   end
    # PUT /asset/update_price
+  api :PUT, "asset/update_price", "update asset price"
+  param_group :asset
+  returns :asset => :asset, :code => 200, :desc => "updated asset"
   def update_price
     @asset=Asset.find_by_name(asset_params[:name])
     #Check if price is sent in request body or not
@@ -28,12 +37,17 @@ class AssetController < ApplicationController
   end
 
   #GET /asset/list
+  api :GET, "asset/list", "Get all assets records"
+  returns :array_of => :asset, :code => 200, :desc => "All assets"
   def list
     @assets=Asset.all
     render json: {status: "success",asset: @assets}
   end
 
   #GET /asset/get?name=<asset-Name>
+  api :GET, 'potfolio/get', "get user portfolios request is 'asset/get?name=<asset-Name>'"
+  param :name, String,:desc => "asset name as query in request url" , :required => true
+  returns :asset => :asset, :code => 200, :desc => "Detailed info about asset" 
   def get
     #check if there is no name parameter sent on request
     if !params[:name]
