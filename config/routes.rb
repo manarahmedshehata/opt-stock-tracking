@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  apipie
   post 'portfolio/create'
 
   get 'portfolio/get'

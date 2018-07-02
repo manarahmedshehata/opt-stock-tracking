@@ -1,10 +1,26 @@
 class PortfolioController < ApplicationController	
 
-	
+  #POST /portfolio/create
+#   =begin
+#   Resuest body must be {
+# 	"portfolio":{
+# 		"asset":[{"name": <asset_name>,"amount":<invest_amount>},{"name": <asset_name>,"amount":<invest_amount>},...],
+# 		"user": <creator_id>
+# 	}
+# }
+#   =end
+  def_param_group :asset do
+  param :name, String, "asset name"
+  param :price, Integer
+  end
+  api :POST, 'potfolio/create' , "Create the portfolio"
+  #param_group :asset
+   param :asset, Array[:asset],:desc => "array of submitted assets with asset Name and invested amount in this asset"
+   param :user, Integer,:desc => "creator id" 
   def create
   	@portfolio_creator=User.find(portfolio_creator[:user])
   	@portfolio = Portfolio.create(user:@portfolio_creator)
-  	@port_assets = params[:portfolio][:assetaa]
+  	@port_assets = params[:portfolio][:asset]
   	#check for portfolio saving 
   	if !@portfolio.save
   		render json: {status: "error",msg: "Can't save portfolio"}
@@ -26,7 +42,8 @@ class PortfolioController < ApplicationController
 			else
 				#calculate invested stocks number
 
-				@stocks_no = passet["amount"].to_f / @asset.price
+				@stocks_no = passet["amount"].to_f / @asset.price 
+				#/
 				puts @stocks_no
 				@portfolio_asset = PortfolioAsset.create(portfolio: @portfolio, asset: @asset, amount: passet["amount"],stocks: @stocks_no)
 				puts "---asset save--"
@@ -51,6 +68,9 @@ class PortfolioController < ApplicationController
   end
  
 #GET List user portfolios
+#GET /portfolio/get?user=<User_id>
+ api :GET, 'potfolio/get'
+  param :user, Integer,:desc => "creator id" 
   def get
   	@portfoliosdata=[]
   	#get all related portfolios
