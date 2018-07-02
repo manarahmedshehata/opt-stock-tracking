@@ -45,7 +45,7 @@ class AssetController < ApplicationController
   end
 
   #GET /asset/get?name=<asset-Name>
-  api :GET, 'potfolio/get', "get user portfolios request is 'asset/get?name=<asset-Name>'"
+  api :GET, 'asset/get', "get asset request is 'asset/get?name=<asset-Name>'"
   param :name, String,:desc => "asset name as query in request url" , :required => true
   returns :asset => :asset, :code => 200, :desc => "Detailed info about asset" 
   def get
