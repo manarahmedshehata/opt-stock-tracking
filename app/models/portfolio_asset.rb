@@ -4,5 +4,6 @@ class PortfolioAsset < ApplicationRecord
   validates :portfolio, presence: true
   validates :asset, presence: true
   validates :amount, presence: true
+  validates :stocks, presence: true
 
 end

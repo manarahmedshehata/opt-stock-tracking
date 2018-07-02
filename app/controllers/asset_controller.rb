@@ -22,14 +22,6 @@ class AssetController < ApplicationController
     elsif !@asset.update(price: asset_params[:price])
       render json: {status: "error", msg: "Can't update this asset"}
     else
-      # #Check if there any portfolio has this asset to update it
-      # @portfolios_has_asset=PortfolioAsset.where(asset: @asset.id)
-      # if @portfolios_has_asset
-      #   @portfolios_has_asset.each{|portfolio|
-      #     @newinvest= (portfoli.amount / @asset["price"])
-      #     portfolio.update(amount: asset_params[:price])
-      #   }
-      # end
       render json: {status: "success",asset: @asset}   
     end
     

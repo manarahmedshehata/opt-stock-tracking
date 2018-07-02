@@ -1,4 +1,6 @@
 class PortfolioController < ApplicationController	
+
+	
   def create
   	@portfolio_creator=User.find(portfolio_creator[:user])
   	@portfolio = Portfolio.create(user:@portfolio_creator)
@@ -13,6 +15,7 @@ class PortfolioController < ApplicationController
 
 	else
 		@wrong_assets=[]
+		@portfolio_assets=[]
 		@port_assets.each{ |passet|
 			@asset=Asset.find_by_name(passet["name"])
 			#check for exesting asset with sent name 
@@ -21,13 +24,19 @@ class PortfolioController < ApplicationController
 				puts "------if------"
 				@wrong_assets.push(passet["name"])
 			else
-				@portfolio_asset = PortfolioAsset.create(portfolio: @portfolio, asset: @asset, amount: passet["amount"])
+				#calculate invested stocks number
+
+				@stocks_no = passet["amount"].to_f / @asset.price
+				puts @stocks_no
+				@portfolio_asset = PortfolioAsset.create(portfolio: @portfolio, asset: @asset, amount: passet["amount"],stocks: @stocks_no)
 				puts "---asset save--"
 				if !@portfolio_asset.save		
 					puts "---asset dest--"
   				    @portfolio.destroy
 					render json: {status: "error",msg: "Can't save portfolio"}
 					break
+				else
+					@portfolio_assets.push(@portfolio_asset)
 				end
 			end
 		}
@@ -36,7 +45,7 @@ class PortfolioController < ApplicationController
 			@msg=@wrong_assets.map(&:inspect).join(', ')
 			render json: {status: "error",msg: "These assets are not exist "+@msg+" or the mount is not added"}
 		else
-			render json: {status: "success",portfolio: @portfolio,portass: @portfolio_asset}
+			render json: {status: "success",portfolio: @portfolio,portass: @portfolio_assets}
 		end		
   	end
   end
@@ -46,16 +55,21 @@ class PortfolioController < ApplicationController
   	@portfoliosdata=[]
   	#get all related portfolios
   	@portfolios_info=Portfolio.where(user: params[:user])
-
+  	@portfolio_count=0
   	@portfolios_info.each{|portfolio|
   		@portfolio_asset_ids=PortfolioAsset.where(portfolio: portfolio.id)
   		puts  @portfolio_asset_ids
+  		@portfolio_data=[]
   		@portfolio_asset_ids.each{ |port_asset|
-  			@asset=Asset.find(port_asset.id)
-  			@asset_amount=port_asset.amount
-  			@portfoliosdata.push({"asset_name": @asset["name"],"invest ammount": port_asset.amount})
+  			puts port_asset.id
+  			@asset=Asset.find(port_asset.asset_id)
+  			@invest_amount=port_asset["stocks"].to_f * @asset.price.to_f
+  			@portfolio_data.push({"asset_name": @asset["name"],"invest amount": @invest_amount})
+  			#@portfoliosdata.push({"asset_name": @asset["name"],"invest amount": @invest_amount})
   		}
 
+  		@portfoliosdata.push({'portfolio': @portfolio_data})
+  		@portfolio_count=@portfolio_count+1
   	}
 
   	render json: {status: "success",portfolios: @portfoliosdata}
